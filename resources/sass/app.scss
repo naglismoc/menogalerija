@@ -1,0 +1,22 @@
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+// Variables
+@import 'variables';
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td,
+th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
