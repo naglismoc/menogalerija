@@ -26,15 +26,3 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
-
-const app = new Vue({
-    el: '#app',
-});
-// window.addEventListener("load", function() {
-//     document.getElementById('category_id').multiselect();
-//     console.log('done');
-// });
-
-$(document).ready(function() {
-    $('#ingredients').multiselect();
-});

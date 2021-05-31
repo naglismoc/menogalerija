@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Art;
-use App\Models\Category;
 use App\Models\ArtCategory;
-use Illuminate\Http\Request;
+use App\Models\Category;
 use Auth;
+use Illuminate\Http\Request;
 
 class ArtController extends Controller
 {
@@ -19,7 +19,7 @@ class ArtController extends Controller
     {
         $categories = Category::All();
         $art = Art::all();
-        return view('art.index',["art" => $art,"categories" => $categories]);
+        return view('art.index', ["art" => $art, "categories" => $categories]);
     }
 
     /**
@@ -30,7 +30,7 @@ class ArtController extends Controller
     public function create()
     {
         $categories = Category::All();
-        return view('art.create',["categories" => $categories]);
+        return view('art.create', ["categories" => $categories]);
     }
 
     /**
@@ -41,19 +41,23 @@ class ArtController extends Controller
      */
     public function store(Request $request)
     {
-       $art = Art::create([
+        $art = Art::create([
             'title' => $request->title,
             'description' => $request->description,
             'status' => 0,
             'user_id' => Auth::user()->id,
-        ]); 
-
-        ArtCategory::create([
-            'art_id' => $art->id,
-            'category_id' => $request->category_id, 
         ]);
+//  dd($request->category_id);
+        for ($i = 0; $i < count($request->category_id); $i++) {
+            $cat_id = $request->category_id[$i];
+            ArtCategory::create([
+                'art_id' => $art->id,
+                'category_id' => $cat_id,
+            ]);
 
-        return redirect()->route('art.index');
+        }
+
+        return redirect()->route('art.index')->with('success_message', 'Sekmingai įkelta.');
     }
 
     /**
@@ -75,7 +79,8 @@ class ArtController extends Controller
      */
     public function edit(Art $art)
     {
-        return view('art.edit',['art' => $art]);
+        $categories = Category::All();
+        return view('art.edit', ['art' => $art, "categories" => $categories]);
     }
 
     /**
@@ -87,9 +92,51 @@ class ArtController extends Controller
      */
     public function update(Request $request, Art $art)
     {
-        $art->name = $request->name;
+        // vertes kurios buvo pasirinktos ir liko
+        // naujai pasirinktos vertes (irasyti)
+        // vertes kuriu nebeliko.
+        // atnaujint art objekta
+ 
+        $catIdsArr = $art->categoryIdsArr();
+        $catIdsDBArr = [];
+        foreach ($request->category_id as $cat) {
+            $catIdsDBArr[] = $cat;
+        }
+
+
+        foreach ($catIdsArr as $cat) {
+            if (in_array($cat, $catIdsDBArr)) {
+                if (($key = array_search($cat, $catIdsDBArr)) !== false) {
+                    unset($catIdsDBArr[$key]);
+                }
+            }
+        }
+
+        foreach ($request->category_id as $cat) {
+            if (in_array($cat, $catIdsArr)) {
+                if (($key = array_search($cat, $catIdsArr)) !== false) {
+                    unset($catIdsArr[$key]);
+                }
+            }
+        }
+        
+        foreach ($catIdsArr as $key => $cat) {
+            ArtCategory::where("category_id",$cat)->where("art_id", $art->id)->delete();
+        }
+        if(!in_array("0",$catIdsDBArr)){
+            foreach ($catIdsDBArr as $key => $cat) {
+                ArtCategory::create([
+                    'art_id' => $art->id,
+                    'category_id' => $catIdsDBArr[$key],
+                ]);
+            }
+        }
+
+        $art->title = $request->title;
+        $art->description = $request->description;
         $art->save();
-        return redirect()->route('art.index');
+
+        return redirect()->route('art.index')->with('success_message', 'Sekmingai atnaujinta.');
     }
 
     /**
@@ -100,7 +147,12 @@ class ArtController extends Controller
      */
     public function destroy(Art $art)
     {
+
+
+        foreach ($art->categoryIdsArr() as $key => $cat) {
+            ArtCategory::where("category_id",$cat)->where("art_id", $art->id)->delete();
+        }
         $art->delete();
-        return redirect()->route('art.index');
+        return redirect()->route('art.index')->with('success_message', 'Sekmingai ištrinta.');
     }
 }

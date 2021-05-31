@@ -11,4 +11,10 @@ class Category extends Model
     protected $fillable = [
         'name',
     ];
+
+    public function art()
+    {
+        return $this->belongsToMany(Art::class, 'art_categories');    
+    }
+
 }
