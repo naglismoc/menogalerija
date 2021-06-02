@@ -22,7 +22,7 @@ class Art extends Model
 
     public function categoryNames(){
         $arr = [];
-        foreach ($this->categories as $key => $category) {
+        foreach ($this->categories->sortBy('name')  as $key => $category) {
             $arr[] = $category->name;
         } 
         return implode(", ",$arr);

@@ -15,7 +15,7 @@
                             @endforeach
                         </select>
                     </form>
-                    <a  style="display:inline-block" class="btn btn-primary" href="{{route('art.index')}}">rodyti viską</a>
+                    <a  style="display:inline-block" class="btn btn-primary" href="{{route('art.public')}}">rodyti viską</a>
         </div>
            </div>
            <div class="card">
@@ -35,18 +35,13 @@
         }
 
                                 ?>
-                                <a style="display: block" href="{{route('art.index',['sort'=> 'up', "category_id"=> $cat_id])}}">▲</a>
-                                <a style="display: block" href="{{route('art.index',['sort'=> 'down', "category_id"=> $cat_id])}}">▼</a>
+                                <a style="display: block" href="{{route('art.public',['sort'=> 'up', "category_id"=> $cat_id])}}">▲</a>
+                                <a style="display: block" href="{{route('art.public',['sort'=> 'down', "category_id"=> $cat_id])}}">▼</a>
                             </div>
                 ­
                         </th>
                         <th>Aprašas</th>
                         <th>Kategorijos</th>
-                        @if(Auth::user())
-                        <th>Redaguoti</th>
-                        <th>išjungti</th>
-                        <th>Šalinti</th>
-                        @endif
                     </tr>
                   
                 
@@ -55,28 +50,7 @@
                     <td><h2>{{$artUnit->title}}</h2></td>
                     <td>{{$artUnit->description}}</td>
                     <td>{{  $artUnit->categoryNames()  }}</td>
-                    @if(Auth::user())
-                        <td><a class="btn btn-primary" href="{{route('art.edit',$artUnit)}}">redaguoti</a></td>
-                        <td>
-                            @if($artUnit->status == 1)
-                            <form action="{{route('art.disable',$artUnit)}}" method="post">
-                                @csrf
-                                <input  class="btn btn-warning" type="submit" value="išjungti">
-                            </form>
-                            @else
-                            <form action="{{route('art.enable',$artUnit)}}" method="post">
-                                @csrf
-                                <input  class="btn btn-success" type="submit" value="įjungti">
-                            </form>
-                            @endif
-                        </td>
-                        <td>
-                            <form action="{{route('art.destroy',$artUnit)}}" method="post">
-                                @csrf
-                                <input  class="btn btn-danger" type="submit" value="trinti">
-                            </form>
-                        </td>
-                        @endif
+                    
                   </tr>
                 @endforeach
                 

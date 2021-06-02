@@ -10,17 +10,93 @@ use Illuminate\Http\Request;
 
 class ArtController extends Controller
 {
-    /**
+
+    public function __construct()
+    {
+        $this->middleware('auth')->except('index');
+        // $this->middleware('auth')->except('index');
+        // $this->middleware('auth')->except('index');
+    }
+
+
+       /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $categories = Category::All();
-        $art = Art::all();
+      
+        $categories = Category::orderBy('name')->get();
+        $art = getArt('');
         return view('art.index', ["art" => $art, "categories" => $categories]);
     }
+
+    public function public()
+    {
+      
+        $categories = Category::orderBy('name')->get();
+        $art = getArt('');
+        return view('art.index', ["art" => $art, "categories" => $categories]);
+    }
+ 
+
+    public function singleUser()
+    {
+      
+        $categories = Category::orderBy('name')->get();
+        $art = getArt('single');
+        return view('art.index', ["art" => $art, "categories" => $categories]);
+    }
+
+
+
+ public function getArt($single)
+{
+    $getInfo = "";
+    if(isset($_GET['sort'])){
+        $getInfo.=$_GET['sort'];
+    }
+    if(isset($_GET['category_id'])){
+        if($_GET['category_id'] != '0'){
+        $getInfo.=" cat";
+        }
+    }
+
+    switch ($getInfo) {
+        
+        case " cat":
+            $art =  Art::where('user_id', Auth::user()->id)->whereHas('categories', function($query){
+                $query->where('categories.id', $_GET['category_id']);
+            })->get();
+          break;
+        case "down cat":
+            $art =  Art::where('user_id', Auth::user()->id)->whereHas('categories', function($query){
+                $query->where('categories.id', $_GET['category_id']);
+            })->orderBy('title','desc')->get();
+          break;
+        case "up cat":
+            $art =  Art::where('user_id', Auth::user()->id)->whereHas('categories', function($query){
+                $query->where('categories.id', $_GET['category_id']);
+            })->orderBy('title','asc')->get();
+            break;
+        case "down":
+            $art = Art::where('user_id', Auth::user()->id)->orderBy('title','desc')->get();
+            break;
+        case "up":
+            $art = Art::where('user_id', Auth::user()->id)->orderBy('title')->get();
+            break;
+        case "":
+            $art = Art::where('user_id', Auth::user()->id)->orderBy('id','desc')->get();
+            break;
+      }
+      return $art;
+}
+
+
+
+
+  
 
     /**
      * Show the form for creating a new resource.
@@ -154,5 +230,17 @@ class ArtController extends Controller
         }
         $art->delete();
         return redirect()->route('art.index')->with('success_message', 'Sekmingai ištrinta.');
+    }
+    public function enable(Art $art)
+    {
+        $art->status = 1;
+        $art->save();
+        return redirect()->route('art.index')->with('success_message', 'Sekmingai ijungta.');
+    }
+    public function disable(Art $art)
+    {   
+        $art->status = 0;
+        $art->save();
+        return redirect()->route('art.index')->with('success_message', 'Sekmingai išjungta.');
     }
 }

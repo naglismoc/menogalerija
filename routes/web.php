@@ -17,6 +17,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
 Auth::routes();
 
 Route::group(['middleware' => ['auth']], function () {
@@ -32,13 +33,17 @@ Route::group(['middleware' => ['auth']], function () {
     });
 
     Route::group(['prefix' => 'art'], function(){
-        Route::get('/index', [App\Http\Controllers\ArtController::class, 'index'])->name('art.index');
+      Route::get('/public', [App\Http\Controllers\ArtController::class, 'public'])->name('art.public');
+      Route::get('/index', [App\Http\Controllers\ArtController::class, 'index'])->name('art.index');
+      Route::get('/singleUser', [App\Http\Controllers\ArtController::class, 'singleUser'])->name('art.singleUser');
         Route::group(['middleware' => ['auth']], function () {
             Route::get('/create', [App\Http\Controllers\ArtController::class, 'create'])->name('art.create');
             Route::get('/edit/{art}', [App\Http\Controllers\ArtController::class, 'edit'])->name('art.edit');
             Route::post('/update/{art}', [App\Http\Controllers\ArtController::class, 'update'])->name('art.update');
             Route::post('/store/', [App\Http\Controllers\ArtController::class, 'store'])->name('art.store');
             Route::post('/destroy/{art}', [App\Http\Controllers\ArtController::class, 'destroy'])->name('art.destroy');
+            Route::post('/disable/{art}', [App\Http\Controllers\ArtController::class, 'disable'])->name('art.disable');
+            Route::post('/enable/{art}', [App\Http\Controllers\ArtController::class, 'enable'])->name('art.enable');
           });
       
         });
