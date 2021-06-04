@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Art;
+use App\Models\User;
 use App\Models\ArtCategory;
 use App\Models\Category;
 use Auth;
@@ -26,27 +27,47 @@ class ArtController extends Controller
      */
     public function index()
     {
+        $cat_id=0;
+        $user_id=0;
+        $sort=0;
+        $getInfo = "";
+        if(isset($_GET['sort'])){
+            $cat_id=$_GET['sort'];
+        }
+        if(isset($_GET['category_id'])){
+            $cat_id= $_GET['category_id'];
+            
+        }
+        
+    
+        if(isset($_GET['user_id']) ){
+            $user_id= $_GET['user_id'];
+
+        }
+
+
       
         $categories = Category::orderBy('name')->get();
-        $art = getArt('');
-        return view('art.index', ["art" => $art, "categories" => $categories]);
+            $art = $this->getArt('');
+        $users = User::all();
+        return view('art.index', ["art" => $art, "categories" => $categories, 'users' => $users,'cat_id'=>$cat_id, 'user_id'=>$user_id,'sort'=>$sort]);
     }
 
-    public function public()
-    {
+    // public function public()
+    // {
       
-        $categories = Category::orderBy('name')->get();
-        $art = getArt('');
-        return view('art.index', ["art" => $art, "categories" => $categories]);
-    }
+    //     $categories = Category::orderBy('name')->get();
+    //     $art = getArt('');
+    //     return view('art.index', ["art" => $art, "categories" => $categories]);
+    // }
  
 
     public function singleUser()
     {
       
         $categories = Category::orderBy('name')->get();
-        $art = getArt('single');
-        return view('art.index', ["art" => $art, "categories" => $categories]);
+        $art =  $this->getArt('single');
+        return view('art.index', ["art" => $art, "categories" => $categories,"single" => true]);
     }
 
 
@@ -62,32 +83,97 @@ class ArtController extends Controller
         $getInfo.=" cat";
         }
     }
+    
+    if(isset($_GET['single']) || $single!=""){
+        $getInfo.=" single";
+    }
+
+    if(isset($_GET['user_id']) ){
+        if(($_GET['user_id']!= '0') ){
+        $getInfo.=" user";
+        }
+    }
 
     switch ($getInfo) {
         
         case " cat":
-            $art =  Art::where('user_id', Auth::user()->id)->whereHas('categories', function($query){
+            $art =  Art::whereHas('categories', function($query){
                 $query->where('categories.id', $_GET['category_id']);
             })->get();
           break;
         case "down cat":
-            $art =  Art::where('user_id', Auth::user()->id)->whereHas('categories', function($query){
+            $art =  Art::whereHas('categories', function($query){
                 $query->where('categories.id', $_GET['category_id']);
             })->orderBy('title','desc')->get();
           break;
         case "up cat":
-            $art =  Art::where('user_id', Auth::user()->id)->whereHas('categories', function($query){
+            $art =  Art::whereHas('categories', function($query){
                 $query->where('categories.id', $_GET['category_id']);
             })->orderBy('title','asc')->get();
             break;
         case "down":
-            $art = Art::where('user_id', Auth::user()->id)->orderBy('title','desc')->get();
+            $art = Art::orderBy('title','desc')->get();
             break;
         case "up":
+            $art = Art::orderBy('title')->get();
+            break;
+
+
+        case " cat single":
+            $art =  Art::where('user_id', Auth::user()->id)->whereHas('categories', function($query){
+                $query->where('categories.id', $_GET['category_id']);
+            })->get();
+            break;
+        case "down cat single":
+            $art =  Art::where('user_id', Auth::user()->id)->whereHas('categories', function($query){
+                $query->where('categories.id', $_GET['category_id']);
+            })->orderBy('title','desc')->get();
+            break;
+        case "up cat single":
+            $art =  Art::where('user_id', Auth::user()->id)->whereHas('categories', function($query){
+                $query->where('categories.id', $_GET['category_id']);
+            })->orderBy('title','asc')->get();
+            break;
+        case "down single":
+            $art = Art::where('user_id', Auth::user()->id)->orderBy('title','desc')->get();
+            break;
+        case "up single":
             $art = Art::where('user_id', Auth::user()->id)->orderBy('title')->get();
             break;
-        case "":
+        case " single":
             $art = Art::where('user_id', Auth::user()->id)->orderBy('id','desc')->get();
+            break;
+
+
+
+        
+        case " cat user":
+            $art =  Art::where('user_id', $_GET['user_id'])->whereHas('categories', function($query){
+                $query->where('categories.id', $_GET['category_id']);
+            })->get();
+            break;
+        case "down cat user":
+            $art =  Art::where('user_id',$_GET['user_id'])->whereHas('categories', function($query){
+                $query->where('categories.id', $_GET['category_id']);
+            })->orderBy('title','desc')->get();
+            break;
+        case "up cat user":
+            $art =  Art::where('user_id', $_GET['user_id'])->whereHas('categories', function($query){
+                $query->where('categories.id', $_GET['category_id']);
+            })->orderBy('title','asc')->get();
+            break;
+        case "down user":
+            $art = Art::where('user_id', $_GET['user_id'])->orderBy('title','desc')->get();
+            break;
+        case "up user":
+            $art = Art::where('user_id', $_GET['user_id'])->orderBy('title')->get();
+            break;
+        case " user":
+            $art = Art::where('user_id', $_GET['user_id'])->orderBy('id','desc')->get();
+            break;    
+
+        case "":
+            $art = Art::orderBy('id','desc')->get();
             break;
       }
       return $art;
