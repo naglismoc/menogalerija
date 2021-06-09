@@ -26,3 +26,14 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
+
+
+
+//failo pavadinimo atvaizdavimas
+window.onload = function() {
+    let file = document.querySelector('#fileToUpload');
+    file.addEventListener('change', (e) => {
+        let arr = file.value.split('\\');
+        document.querySelector('#fileText').innerHTML = arr[arr.length - 1];
+    });
+};

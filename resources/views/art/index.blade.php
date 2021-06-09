@@ -99,6 +99,8 @@
                   
                 
             @foreach ($art as $artUnit)
+            {!!$artUnit->photo()!!}
+            <img src="{{ asset('/images/artGallery/'.$artUnit->photo()) }}" alt="">
                {{-- {{ dd($artUnit->user)}} --}}
                @if(Auth::user())
                     @if($artUnit->status == 0 && $artUnit->user->id != Auth::user()->id)

@@ -1899,6 +1899,15 @@ Vue.component('example-component', __webpack_require__(/*! ./components/ExampleC
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
+//failo pavadinimo atvaizdavimas
+
+window.onload = function () {
+  var file = document.querySelector('#fileToUpload');
+  file.addEventListener('change', function (e) {
+    var arr = file.value.split('\\');
+    document.querySelector('#fileText').innerHTML = arr[arr.length - 1];
+  });
+};
 
 /***/ }),
 

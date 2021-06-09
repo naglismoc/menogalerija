@@ -6,8 +6,12 @@ use App\Models\Art;
 use App\Models\User;
 use App\Models\ArtCategory;
 use App\Models\Category;
+use App\Models\Image;
 use Auth;
 use Illuminate\Http\Request;
+use Validator;
+use Str;
+use Intervention\Image\ImageManagerStatic as ImageSaver;
 
 class ArtController extends Controller
 {
@@ -203,13 +207,51 @@ class ArtController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->photo);
+        $validator = Validator::Make($request->all(),
+        
+            [
+                'title' => ['required', 'max:25'],
+                // 'file' => ['required|image|mimes:jpeg,png,jpg,bmp,gif,svg|max:2048'],
+            ] , 
+            [
+                'title.max' => 'bišky per ilgas..',
+                'title.required' => 'a kur pavadinimas, a?',
+                'photo.image' => 'keista nuotrauka..',
+            ]
+        );
+        if($validator->fails()){
+            $request->flash();
+            return redirect()->back()->withErrors($validator);
+        }
+
+
         $art = Art::create([
             'title' => $request->title,
             'description' => $request->description,
             'status' => 0,
             'user_id' => Auth::user()->id,
         ]);
-//  dd($request->category_id);
+        // $image = new Image();
+        // $image->art_id = $art->id;
+        // dd($request->photo);
+        // dd($request->file('photo')[0]);
+    
+        if($request->has('photo')){
+            $img = ImageSaver::make($request->file('photo'));
+            $fileName = Str::random(5).".jpg";
+            $folder = public_path("images/artGallery");
+            $img->resize(1200,null, function($contraint){
+                $contraint->aspectRatio();
+            });
+            $img->save($folder.'/'.$fileName,80,'jpg');
+        }
+        $image = new Image();
+        $image->art_id = $art->id;
+        $image->name = $fileName;
+        $image->save();
+
+
         for ($i = 0; $i < count($request->category_id); $i++) {
             $cat_id = $request->category_id[$i];
             ArtCategory::create([

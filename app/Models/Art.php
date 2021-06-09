@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use DB;
 use App\Models\User;
 class Art extends Model
 {
@@ -23,6 +23,10 @@ class Art extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function photos()
+    {
+        return $this->hasMany(Image::class, 'art_id', 'id');
     }
    
 
@@ -51,5 +55,17 @@ class Art extends Model
         return $arr;
     }
 
+    public function photo()
+    {
+       $photoName = Image::where('art_id', $this->id)->first();
+    //    dd($photoName );
+    if($photoName){
+        $photoName = $photoName->name;
+        // dd(public_path("images/artGallery").'/'.$photoName);
+        // $photoName ='<img src="'.public_path("images/artGallery").'/'.$photoName.'" alt="">';
+    }
+    
+    return $photoName;
+    }
   
 }
