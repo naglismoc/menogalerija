@@ -211,7 +211,7 @@ class ArtController extends Controller
         $validator = Validator::Make($request->all(),
         
             [
-                'title' => ['required', 'max:25'],
+                'title' => ['required', 'max:50'],
                 // 'file' => ['required|image|mimes:jpeg,png,jpg,bmp,gif,svg|max:2048'],
             ] , 
             [
@@ -225,31 +225,17 @@ class ArtController extends Controller
             return redirect()->back()->withErrors($validator);
         }
 
-
+       
         $art = Art::create([
             'title' => $request->title,
             'description' => $request->description,
             'status' => 0,
             'user_id' => Auth::user()->id,
         ]);
-        // $image = new Image();
-        // $image->art_id = $art->id;
-        // dd($request->photo);
-        // dd($request->file('photo')[0]);
-    
-        if($request->has('photo')){
-            $img = ImageSaver::make($request->file('photo'));
-            $fileName = Str::random(5).".jpg";
-            $folder = public_path("images/artGallery");
-            $img->resize(1200,null, function($contraint){
-                $contraint->aspectRatio();
-            });
-            $img->save($folder.'/'.$fileName,80,'jpg');
-        }
-        $image = new Image();
-        $image->art_id = $art->id;
-        $image->name = $fileName;
-        $image->save();
+
+        $request->art_id = $art->id;
+        $imgController = new ImageController();
+        $imgController->store($request);
 
 
         for ($i = 0; $i < count($request->category_id); $i++) {
@@ -272,7 +258,7 @@ class ArtController extends Controller
      */
     public function show(Art $art)
     {
-        //
+        return view('art.show', ["art" => $art]);
     }
 
     /**
@@ -296,10 +282,8 @@ class ArtController extends Controller
      */
     public function update(Request $request, Art $art)
     {
-        // vertes kurios buvo pasirinktos ir liko
-        // naujai pasirinktos vertes (irasyti)
-        // vertes kuriu nebeliko.
-        // atnaujint art objekta
+     
+
  
         $catIdsArr = $art->categoryIdsArr();
         $catIdsDBArr = [];

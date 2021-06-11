@@ -34,6 +34,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::group(['prefix' => 'art'], function(){
       Route::get('/public', [App\Http\Controllers\ArtController::class, 'public'])->name('art.public');
+      Route::get('/show/{art}', [App\Http\Controllers\ArtController::class, 'show'])->name('art.show');
       Route::get('/index', [App\Http\Controllers\ArtController::class, 'index'])->name('art.index');
       Route::get('/singleUser', [App\Http\Controllers\ArtController::class, 'singleUser'])->name('art.singleUser');
         Route::group(['middleware' => ['auth']], function () {
@@ -47,6 +48,15 @@ Route::group(['middleware' => ['auth']], function () {
           });
       
         });
+
+        Route::group(['prefix' => 'photo'], function(){
+          Route::group(['middleware' => ['auth']], function () {
+            Route::post('/destroy/{image}', [App\Http\Controllers\ImageController::class, 'destroy'])->name('photo.destroy');
+            Route::post('/store/', [App\Http\Controllers\ImageController::class, 'store'])->name('photo.store');
+        });
+      
+      });
+
 
   
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Image;
 use Illuminate\Http\Request;
+use Intervention\Image\ImageManagerStatic as ImageSaver;
+use Str;
 
 class ImageController extends Controller
 {
@@ -35,7 +37,21 @@ class ImageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if($request->has('photo')){
+            // dd($request->file('photo'));
+            $img = ImageSaver::make($request->file('photo'));
+            $fileName = Str::random(5).".jpg";
+            $folder = public_path("images/artGallery");
+            $img->resize(1200,null, function($contraint){
+                $contraint->aspectRatio();
+            });
+            $img->save($folder.'/'.$fileName,80,'jpg');
+        }
+        $image = new Image();
+        $image->art_id = $request->art_id;
+        $image->name = $fileName;
+        $image->save();
+        return redirect()->back()->with('success_message','Nuotrauka sėkmingai įkelta'); 
     }
 
     /**
@@ -80,6 +96,9 @@ class ImageController extends Controller
      */
     public function destroy(Image $image)
     {
-        //
+        $folder = public_path("images\\artGallery");
+        unlink( $folder.'\\'.$image->name);
+        $image->delete();
+        return redirect()->back()->with('success_message','Nuotrauka sėkmingai ištrinta'); 
     }
 }

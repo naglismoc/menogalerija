@@ -29,14 +29,34 @@
                         @endforeach
                     </select>
                 
-                    <br>{!!$art->photo()!!}<br>
-                    <label><b>Įkelkite <span style="color: red;"> nuotraukas </span> čia</b></label>
-                    <input type="file" id="fileToUpload" name="photo" style="display: none">
-                    <div onclick="document.getElementById('fileToUpload').click()" class="btn btn-primary" style="padding: 0.075rem 0.5rem;">Spausk čia</div><br>
-                    <small id="fileText" class="form-text text-muted"></small>
-                    <input type="hidden" id="delPhoto">
-                    <input class="btn btn-primary" type="submit" value="Išsaugoti">
+               
+                   <br> <input class="btn btn-primary" type="submit" value="Išsaugoti">
                     </form>
+                    <hr>
+                    <form action="{{route('photo.store')}}" method="post"  enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="art_id" value="{{$art->id}}">
+                        <label><b>Įkelkite <span style="color: red;"> nuotraukas </span> čia</b></label>
+                        <input type="file" id="fileToUpload" name="photo" style="display: none">
+                        <div onclick="document.getElementById('fileToUpload').click()" class="btn btn-primary" style="padding: 0.075rem 0.5rem;">Spausk čia</div><br>
+                        <small id="fileText" class="form-text text-muted"></small>
+                        <input type="hidden" id="delPhoto">
+                        <input class="btn btn-primary" type="submit" value="Įkelti nuotrauką">
+                    </form>
+                    <hr>
+                  <div class="row">
+                        @foreach ($art->photos as $photo)
+                        <div class="col-3">
+                            <form action="{{route('photo.destroy',$photo)}}" method="post">
+                                @csrf
+                                <div class=" logo-container">
+                                    <img class="logo" src="<?=asset("images/artGallery").'/'.$photo->name?>" alt="">
+                                    <input class="del-btn" type="submit" value="X">
+                                </div>
+                            </form>
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </div>

@@ -10018,3 +10018,24 @@ th {
 tr:nth-child(even) {
   background-color: #dddddd;
 }
+
+.logo {
+  height: 150px;
+}
+
+.logo-container {
+  position: relative;
+  display: inline-block;
+  border: solid 1px black;
+}
+
+.removed {
+  opacity: 0.5;
+}
+
+.del-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: red;
+}

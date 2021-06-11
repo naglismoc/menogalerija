@@ -1906,6 +1906,12 @@ window.onload = function () {
   file.addEventListener('change', function (e) {
     var arr = file.value.split('\\');
     document.querySelector('#fileText').innerHTML = arr[arr.length - 1];
+
+    if (document.querySelector('#delPhoto') != null) {
+      console.log('mes edite'); // document.getElementsByClassName('logo')[0].remove();
+
+      document.getElementsByClassName('logo')[0].classList.add('removed');
+    }
   });
 };
 

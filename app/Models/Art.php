@@ -62,10 +62,16 @@ class Art extends Model
     if($photoName){
         $photoName = $photoName->name;
         // dd(public_path("images/artGallery").'/'.$photoName);
-        // $photoName ='<img src="'.public_path("images/artGallery").'/'.$photoName.'" alt="">';
+        $photoName ='<img class="logo" src="'.asset("images/artGallery").'/'.$photoName.'" alt="">';
     }
     
     return $photoName;
     }
+
+    // public function photos()
+    // {
+    //    $photoArr = Image::where('art_id', $this->id)->get();
+    // return $photoArr;
+    // }
   
 }

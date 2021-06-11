@@ -73,6 +73,7 @@
          
                 <table>
                     <tr>
+                       
                         <th style=" text-align:top;">
                             <span style="    float: left; margin: 10px 10px 0 0;">Pavadinimas</span> 
                             <div style="display: inline-block;">
@@ -88,8 +89,11 @@
                             </div>
                 ­
                         </th>
+                        <th>Nuotrauka</th>
+                     
                         <th>Aprašas</th>
                         <th>Kategorijos</th>
+                        <th>Apsilankyti</th>
                         @if(Auth::user())
                         <th>Redaguoti</th>
                         <th>išjungti</th>
@@ -99,8 +103,8 @@
                   
                 
             @foreach ($art as $artUnit)
-            {!!$artUnit->photo()!!}
-            <img src="{{ asset('/images/artGallery/'.$artUnit->photo()) }}" alt="">
+         
+            {{-- <img src="{{ asset('/images/artGallery/'.$artUnit->photo()) }}" alt=""> --}}
                {{-- {{ dd($artUnit->user)}} --}}
                @if(Auth::user())
                     @if($artUnit->status == 0 && $artUnit->user->id != Auth::user()->id)
@@ -110,9 +114,13 @@
                     @endif
                 @endif
                     <tr>
+                      
                         <td><h2>{{$artUnit->title}}</h2></td>
+                        <td>{!!$artUnit->photo()!!}</td>
                         <td>{{$artUnit->description}}</td>
                         <td>{{  $artUnit->categoryNames()  }}</td>
+                        
+                        <td><a class="btn btn-primary" href="{{route('art.show',$artUnit)}}">Užeiti</a></td>
                         @if(Auth::user())
                             @if($artUnit->user->id == Auth::user()->id)
                                 <td><a class="btn btn-primary" href="{{route('art.edit',$artUnit)}}">redaguoti</a></td>
